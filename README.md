@@ -43,7 +43,7 @@ This will give you a directory named **oauth** complete with the source code for
 Using the terminal, change directory to oauth (**cd oauth**), then type **vagrant up** to launch your virtual machine.
 
 
-## Running the Restaurant Menu App
+## Running the Catalog App
 Once it is up and running, type **vagrant ssh**. This will log your terminal into the virtual machine, and you'll get a Linux shell prompt. When you want to log out, type **exit** at the shell prompt.  To turn the virtual machine off (without deleting anything), type **vagrant halt**. If you do this, you'll need to run **vagrant up** again before you can log into it.
 
 
