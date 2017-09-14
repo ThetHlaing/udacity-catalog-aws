@@ -1,5 +1,3 @@
-# OAuth2.0
-Starter Code for Auth&amp;Auth course
 # Installing the Vagrant VM for ud330 - Authentication & Authorization
 
 **Note: If you already have a vagrant machine installed from previous Udacity courses skip to the 'Fetch the Source Code and VM Configuration' section**
