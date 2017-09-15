@@ -560,7 +560,7 @@ def editItem(item_name, catalog_name):
             return render_template('newcatalog.html')
         if request.form['name']:
             isCurrentItemExist = session.query(Item)\
-                                        .filter_by(name=request.form['name'])
+                                        .filter_by(name=request.form['name'])\
                                         .count()
             if isCurrentItemExist == 0:
                 editedItem.name = request.form['name']
