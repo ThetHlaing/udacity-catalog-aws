@@ -17,6 +17,7 @@ import requests
 from functools import wraps
 
 app = Flask(__name__)
+app.secret_key = 'so837dcZd!XJ'
 
 Json_data = json.loads(open('client_secrets.json', 'r').read())
 CLIENT_ID = Json_data['web']['client_id']
@@ -616,6 +617,6 @@ def deleteItem(catalog_name, item_name):
         return render_template('deleteItem.html', item=itemToDelete)
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=80)
+
