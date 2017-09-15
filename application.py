@@ -18,6 +18,7 @@ from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'so837dcZd!XJ'
+app.debug = True
 
 Json_data = json.loads(open('client_secrets.json', 'r').read())
 CLIENT_ID = Json_data['web']['client_id']
