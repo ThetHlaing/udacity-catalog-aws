@@ -64,7 +64,7 @@ def fbconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     access_token = request.data
-    print 'access token received %s ' % access_token
+    print('access token received %s ' % access_token)
 
     fb_ids_json = json.loads(open('fb_client_secrets.json', 'r').read())
     app_id = fb_ids_json['web']['app_id']
@@ -213,7 +213,7 @@ def gconnect():
         response = \
             make_response(json.dumps("Token's client ID "
                                      "does not match app's."), 401)
-        print "Token's client ID does not match app's."
+        print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -267,7 +267,7 @@ def gconnect():
         '-webkit-border-radius: 150px;'\
         '-moz-border-radius: 150px;"> '
     flash('you are now logged in as %s' % login_session['username'])
-    print 'done!'
+     print('done!')
     return output
 
 
