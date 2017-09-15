@@ -15,6 +15,8 @@ import json
 from flask import make_response
 import requests
 from functools import wraps
+from io import BytesIO
+
 
 app = Flask(__name__)
 app.secret_key = 'so837dcZd!XJ'
@@ -26,7 +28,7 @@ APPLICATION_NAME = 'Catalog Application'
 
 # Connect to Database and create database session
 
-engine = create_engine('sqlite:///catalog.db', connect_args={'check_same_thread': False}, echo=True)
+engine = create_engine('sqlite:///catalog.db', connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -77,7 +79,7 @@ def fbconnect():
         'client_secret=%s&fb_exchange_token=%s' \
         % (app_id, app_secret, access_token)
     h = httplib2.Http()
-    result = h.request(url, 'GET')[1]
+    result = str(h.request(url, 'GET')[1])
 
     # Use token to get user info from API
 
@@ -89,7 +91,7 @@ def fbconnect():
         '?access_token=%s&fields=name,id,email' \
         % token
     h = httplib2.Http()
-    result = h.request(url, 'GET')[1]
+    result = str(h.request(url, 'GET')[1])
 
     # print "url sent for API access:%s"% url
     # print "API JSON result: %s" % result
@@ -111,7 +113,7 @@ def fbconnect():
         'picture?access_token=%s&redirect=0&height=200&width=200' \
         % token
     h = httplib2.Http()
-    result = h.request(url, 'GET')[1]
+    result = str(h.request(url, 'GET')[1])
     data = json.loads(result)
 
     login_session['picture'] = data['data']['url']
@@ -151,7 +153,7 @@ def fbdisconnect():
     url = 'https://graph.facebook.com/%s/permissions?access_token=%s' \
         % (facebook_id, access_token)
     h = httplib2.Http()
-    result = h.request(url, 'DELETE')[1]
+    result = str(h.request(url, 'DELETE')[1])
     return 'you have been logged out'
 
 
@@ -190,7 +192,7 @@ def gconnect():
         'v1/tokeninfo?access_token=%s' \
         % access_token
     h = httplib2.Http()
-    result = json.loads(h.request(url, 'GET')[1])
+    result = json.loads(str(h.request(url, 'GET')[1])
 
     # If there was an error in the access token info, abort.
 
