@@ -18,8 +18,8 @@ from functools import wraps
 
 app = Flask(__name__)
 
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web'
-        ]['client_id']
+Json_data = json.loads(open('client_secrets.json', 'r').read())
+CLIENT_ID = Json_data['web']['client_id']
 APPLICATION_NAME = 'Catalog Application'
 
 # Connect to Database and create database session
@@ -47,8 +47,7 @@ def login_required(f):
 
 @app.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase
-                    + string.digits) for x in xrange(32))
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
 
     # return "The current session state is %s" % login_session['state']
@@ -59,17 +58,14 @@ def showLogin():
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != login_session['state']:
-        response = make_response(json.dumps('Invalid state parameter.'
-                                 ), 401)
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     access_token = request.data
     print 'access token received %s ' % access_token
 
-    app_id = json.loads(open('fb_client_secrets.json', 'r'
-                        ).read())['web']['app_id']
-    app_secret = json.loads(open('fb_client_secrets.json', 'r'
-                            ).read())['web']['app_secret']
+    app_id = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_id']
+    app_secret = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_secret']
     url = \
         'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' \
         % (app_id, app_secret, access_token)
@@ -121,7 +117,6 @@ def fbconnect():
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
-
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
@@ -292,8 +287,7 @@ def gdisconnect():
         return response
     else:
         response = \
-            make_response(json.dumps('Failed to revoke token for given user.'
-                          , 400))
+            make_response(json.dumps('Failed to revoke token for given user.',400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -403,8 +397,9 @@ def showCatalog(catalog_name):
 
 # Create a new Catalog
 
-@login_required
+
 @app.route('/catalog/new/', methods=['GET', 'POST'])
+@login_required
 def newCatalog():
     if request.method == 'POST':
         isCurrentCatExist = \
@@ -426,11 +421,12 @@ def newCatalog():
         return render_template('newcatalog.html')
 
 
-## Edit a Catalog
+# Edit a Catalog
 
-@login_required
+
 @app.route('/catalog/<string:catalog_name>/edit/', methods=['GET',
            'POST'])
+@login_required
 def editCatalog(catalog_name):
     editedCatalog = \
         session.query(Catalog).filter_by(name=catalog_name).one()
@@ -458,9 +454,10 @@ def editCatalog(catalog_name):
 
 # Delete a Catalog
 
-@login_required
+
 @app.route('/catalog/<string:catalog_name>/delete/', methods=['GET',
            'POST'])
+@login_required
 def deleteCatalog(catalog_name):
     CatalogToDelete = \
         session.query(Catalog).filter_by(name=catalog_name).one()
@@ -494,8 +491,9 @@ def showItem(catalog_name, item_name):
 
 # Create a new menu item
 
-@login_required
+
 @app.route('/items/new/', methods=['GET', 'POST'])
+@login_required
 def newItem():
     if request.method == 'POST':
         isCurrentItemExist = \
@@ -524,9 +522,10 @@ def newItem():
 
 # Edit a menu item
 
-@login_required
+
 @app.route('/catalog/<string:catalog_name>/<string:item_name>/edit',
            methods=['GET', 'POST'])
+@login_required
 def editItem(item_name, catalog_name):
     editedItem = session.query(Item).filter_by(name=item_name).one()
     if request.method == 'POST':
@@ -572,9 +571,10 @@ def editItem(item_name, catalog_name):
 
 # Delete a menu item
 
-@login_required
+
 @app.route('/catalog/<string:catalog_name>/<string:item_name>/delete',
            methods=['GET', 'POST'])
+@login_required
 def deleteItem(catalog_name, item_name):
     itemToDelete = session.query(Item).filter_by(name=item_name).one()
     if itemToDelete.user_id != login_session['user_id']:
@@ -591,4 +591,4 @@ def deleteItem(catalog_name, item_name):
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5004)
