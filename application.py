@@ -267,7 +267,7 @@ def gconnect():
         '-webkit-border-radius: 150px;'\
         '-moz-border-radius: 150px;"> '
     flash('you are now logged in as %s' % login_session['username'])
-     print('done!')
+    print('done!')
     return output
 
 
