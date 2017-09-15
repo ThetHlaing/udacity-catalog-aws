@@ -559,9 +559,10 @@ def editItem(item_name, catalog_name):
                   % editedItem.name)
             return render_template('newcatalog.html')
         if request.form['name']:
-            isCurrentItemExist = session.query(Item)\
-                                        .filter_by(name=request.form['name'])\
-                                        .count()
+            isCurrentItemExist = session
+            .query(Item)
+            .filter_by(name=request.form['name'])
+            .count()
             if isCurrentItemExist == 0:
                 editedItem.name = request.form['name']
                 if request.form['description']:
