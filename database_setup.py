@@ -60,7 +60,7 @@ class Item(Base):
 
 
 
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('sqlite:///catalog.db',poolclass=NullPool)
 
 
 Base.metadata.create_all(engine)
