@@ -47,7 +47,9 @@ def login_required(f):
 
 @app.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+    state = ''.join(
+        random.choice(string.ascii_uppercase + string.digits)
+        for x in xrange(32))
     login_session['state'] = state
 
     # return "The current session state is %s" % login_session['state']
@@ -510,7 +512,7 @@ def newItem():
         else:
             flash('Item name already exist')
             catalogs = \
-                session.query(Catalog).order_by(asc(Catalog.name))
+                        session.query(Catalog).order_by(asc(Catalog.name))
             return render_template('newitem.html', catalogs=catalogs,
                                    name=request.form['name'],
                                    description=request.form['description'
@@ -533,9 +535,10 @@ def editItem(item_name, catalog_name):
             flash('You are not authorized to edit %s Item.Please create your own item in order to edit.' % editedItem.name)
             return render_template('newcatalog.html')
         if request.form['name']:
-            isCurrentItemExist = \
-                session.query(Item).filter_by(name=request.form['name'
-                    ]).count()
+            isCurrentItemExist = session
+            .query(Item)
+            .filter_by(name=request.form['name'])
+            .count()
             if isCurrentItemExist == 0:
                 editedItem.name = request.form['name']
                 if request.form['description']:
