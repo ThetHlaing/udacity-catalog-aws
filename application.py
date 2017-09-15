@@ -192,7 +192,7 @@ def gconnect():
         'v1/tokeninfo?access_token=%s' \
         % access_token
     h = httplib2.Http()
-    result = json.loads(str(h.request(url, 'GET')[1])
+    result = json.loads(str(h.request(url, 'GET')[1]))
 
     # If there was an error in the access token info, abort.
 
