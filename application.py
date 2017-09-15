@@ -66,10 +66,13 @@ def fbconnect():
     access_token = request.data
     print 'access token received %s ' % access_token
 
-    app_id = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_id']
-    app_secret = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_secret']
+    fb_ids_json = json.loads(open('fb_client_secrets.json', 'r').read())
+    app_id = fb_ids_json['web']['app_id']
+    app_secret = fb_ids_json['web']['app_secret']
     url = \
-        'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' \
+        'https://graph.facebook.com/oauth/access_token?'\
+        'grant_type=fb_exchange_token&client_id=%s&'\
+        'client_secret=%s&fb_exchange_token=%s' \
         % (app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
@@ -80,7 +83,8 @@ def fbconnect():
     token = result.split(',')[0].split(':')[1].replace('"', '')
 
     url = \
-        'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' \
+        'https://graph.facebook.com/v2.8/me'\
+        '?access_token=%s&fields=name,id,email' \
         % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
@@ -101,7 +105,8 @@ def fbconnect():
     # Get user picture
 
     url = \
-        'https://graph.facebook.com/v2.8/me/picture?access_token=%s&redirect=0&height=200&width=200' \
+        'https://graph.facebook.com/v2.8/me/'\
+        'picture?access_token=%s&redirect=0&height=200&width=200' \
         % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
@@ -122,8 +127,13 @@ def fbconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += \
-        ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += """
+        style = "width: 300px;
+        height: 300px;
+        border-radius: 150px;
+        -webkit-border-radius: 150px;
+        -moz-border-radius: 150px;">
+        """
 
     flash('Now logged in as %s' % login_session['username'])
     return output
@@ -149,8 +159,7 @@ def gconnect():
     # Validate state token
 
     if request.args.get('state') != login_session['state']:
-        response = make_response(json.dumps('Invalid state parameter.'
-                                 ), 401)
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -162,14 +171,12 @@ def gconnect():
 
         # Upgrade the authorization code into a credentials object
 
-        oauth_flow = flow_from_clientsecrets('client_secrets.json',
-                scope='')
+        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
-        response = \
-            make_response(json.dumps('Failed to upgrade the authorization code.'
-                          ), 401)
+        response = make_response(json.dumps('Failed to upgrade '
+                                            'the authorization code.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -177,7 +184,8 @@ def gconnect():
 
     access_token = credentials.access_token
     url = \
-        'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' \
+        'https://www.googleapis.com/oauth2/'\
+        'v1/tokeninfo?access_token=%s' \
         % access_token
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
@@ -194,8 +202,8 @@ def gconnect():
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
         response = \
-            make_response(json.dumps("Token's user ID doesn't match given user ID."
-                          ), 401)
+            make_response(json.dumps("Token's user ID "
+                                     "doesn't match given user ID."), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -203,8 +211,8 @@ def gconnect():
 
     if result['issued_to'] != CLIENT_ID:
         response = \
-            make_response(json.dumps("Token's client ID does not match app's."
-                          ), 401)
+            make_response(json.dumps("Token's client ID "
+                                     "does not match app's."), 401)
         print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -213,8 +221,8 @@ def gconnect():
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
         response = \
-            make_response(json.dumps('Current user is already connected.'
-                          ), 200)
+            make_response(json.dumps('Current user '
+                                     'is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -253,7 +261,11 @@ def gconnect():
     output += '<img src="'
     output += login_session['picture']
     output += \
-        ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+        ' " style = "width: 300px; '\
+        'height: 300px;'\
+        'border-radius: 150px;'\
+        '-webkit-border-radius: 150px;'\
+        '-moz-border-radius: 150px;"> '
     flash('you are now logged in as %s' % login_session['username'])
     print 'done!'
     return output
@@ -283,13 +295,14 @@ def gdisconnect():
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']
-        response = make_response(json.dumps('Successfully disconnected.'
-                                 ), 200)
+        response = make_response(json.dumps('Successfully '
+                                            'disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
         response = \
-            make_response(json.dumps('Failed to revoke token for given user.',400))
+            make_response(json.dumps('Failed to revoke '
+                                     'token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -324,8 +337,9 @@ def createUser(login_session):
                    picture=login_session['picture'])
     session.add(newUser)
     session.commit()
-    user = session.query(User).filter_by(email=login_session['email'
-            ]).one()
+    user = session.query(User)\
+                  .filter_by(email=login_session['email'])\
+                  .one()
     return user.id
 
 
@@ -405,8 +419,9 @@ def showCatalog(catalog_name):
 def newCatalog():
     if request.method == 'POST':
         isCurrentCatExist = \
-            session.query(Catalog).filter_by(name=request.form['name'
-                ]).count()
+            session.query(Catalog)\
+                   .filter_by(name=request.form['name'])\
+                   .count()
         if isCurrentCatExist == 0:
             newCatalog = Catalog(name=request.form['name'],
                                  user_id=login_session['user_id'])
@@ -433,13 +448,16 @@ def editCatalog(catalog_name):
     editedCatalog = \
         session.query(Catalog).filter_by(name=catalog_name).one()
     if editedCatalog.user_id != login_session['user_id']:
-        flash('You are not authorized to edit %s Catalog.Please create your own catalog in order to edit.' % editedCatalog.name)
+        flash('You are not authorized to edit %s Catalog.'
+              'Please create your own catalog in order to edit.'
+              % editedCatalog.name)
         return render_template('newcatalog.html')
     if request.method == 'POST':
         if request.form['name']:
             isCurrentCatExist = \
-                session.query(Catalog).filter_by(name=request.form['name'
-                    ]).count()
+                session.query(Catalog)\
+                       .filter_by(name=request.form['name'])\
+                       .count()
             if isCurrentCatExist == 0:
                 editedCatalog.name = request.form['name']
                 flash('Catalog Successfully Edited %s'
@@ -447,7 +465,8 @@ def editCatalog(catalog_name):
                 return redirect(url_for('showCatalogs'))
             else:
                 flash('Catalog name already exist')
-                return render_template('editCatalog.html',
+                return render_template(
+                        'editCatalog.html',
                         catalog=editedCatalog)
     else:
         return render_template('editCatalog.html',
@@ -464,7 +483,9 @@ def deleteCatalog(catalog_name):
     CatalogToDelete = \
         session.query(Catalog).filter_by(name=catalog_name).one()
     if CatalogToDelete.user_id != login_session['user_id']:
-        flash('You are not authorized to delete %s Catalog.Please create your own catalog in order to delete.' % CatalogToDelete.name)
+        flash('You are not authorized to delete %s'
+              ' Catalog.Please create your own catalog'
+              ' in order to delete.' % CatalogToDelete.name)
         return render_template('newcatalog.html')
     if request.method == 'POST':
         items = \
@@ -498,9 +519,9 @@ def showItem(catalog_name, item_name):
 @login_required
 def newItem():
     if request.method == 'POST':
-        isCurrentItemExist = \
-            session.query(Item).filter_by(name=request.form['name'
-                ]).count()
+        isCurrentItemExist = session.query(Item)\
+                                    .filter_by(name=request.form['name'])\
+                                    .count()
         if isCurrentItemExist == 0:
             newItem = Item(name=request.form['name'],
                            description=request.form['description'],
@@ -511,14 +532,15 @@ def newItem():
             return redirect(url_for('showCatalogs'))
         else:
             flash('Item name already exist')
-            catalogs = \
-                        session.query(Catalog).order_by(asc(Catalog.name))
-            return render_template('newitem.html', catalogs=catalogs,
+            catalogs = session.query(Catalog)\
+                              .order_by(asc(Catalog.name))
+            return render_template('newitem.html',
+                                   catalogs=catalogs,
                                    name=request.form['name'],
-                                   description=request.form['description'
-                                   ])
+                                   description=request.form['description'])
     else:
-        catalogs = session.query(Catalog).order_by(asc(Catalog.name))
+        catalogs = session.query(Catalog)\
+                          .order_by(asc(Catalog.name))
         return render_template('newitem.html', catalogs=catalogs)
 
 
@@ -532,7 +554,9 @@ def editItem(item_name, catalog_name):
     editedItem = session.query(Item).filter_by(name=item_name).one()
     if request.method == 'POST':
         if editedItem.user_id != login_session['user_id']:
-            flash('You are not authorized to edit %s Item.Please create your own item in order to edit.' % editedItem.name)
+            flash('You are not authorized to edit %s Item.'
+                  'Please create your own item in order to edit.'
+                  % editedItem.name)
             return render_template('newcatalog.html')
         if request.form['name']:
             isCurrentItemExist = session
@@ -553,11 +577,10 @@ def editItem(item_name, catalog_name):
                                 catalog_name=editedItem.catalog.name))
             else:
                 flash('Item name already exist')
-                catalogs = \
-                    session.query(Catalog).order_by(asc(Catalog.name))
-                return render_template('editItem.html',
-                        item=editedItem, catalogs=catalogs,
-                        catalog_name=editedItem.catalog.name)
+                catalogs = session.query(Catalog).order_by(asc(Catalog.name))
+                return render_template('editItem.html', item=editedItem,
+                                       catalogs=catalogs,
+                                       catalog_name=editedItem.catalog.name)
         else:
             flash('Item name is required')
             catalogs = \
@@ -581,7 +604,9 @@ def editItem(item_name, catalog_name):
 def deleteItem(catalog_name, item_name):
     itemToDelete = session.query(Item).filter_by(name=item_name).one()
     if itemToDelete.user_id != login_session['user_id']:
-        flash('You are not authorized to delete %s Item.Please create your own item in order to delete.' % itemToDelete.name)
+        flash('You are not authorized to delete %s Item'
+              '.Please create your own item in order to delete.'
+              % itemToDelete.name)
         return render_template('newcatalog.html')
     if request.method == 'POST':
         session.delete(itemToDelete)
