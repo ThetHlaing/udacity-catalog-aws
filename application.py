@@ -468,10 +468,10 @@ def editCatalog(catalog_name):
             else:
                 flash('Catalog name already exist')
                 return render_template(
-                        'editCatalog.html',
+                        'editcatalog.html',
                         catalog=editedCatalog)
     else:
-        return render_template('editCatalog.html',
+        return render_template('editcatalog.html',
                                catalog=editedCatalog)
 
 
@@ -499,7 +499,7 @@ def deleteCatalog(catalog_name):
         session.commit()
         return redirect(url_for('showCatalogs'))
     else:
-        return render_template('deleteCatalog.html',
+        return render_template('deletecatalog.html',
                                catalog=CatalogToDelete)
 
 
