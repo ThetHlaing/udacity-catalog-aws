@@ -586,12 +586,12 @@ def editItem(item_name, catalog_name):
             flash('Item name is required')
             catalogs = \
                 session.query(Catalog).order_by(asc(Catalog.name))
-            return render_template('editItem.html', item=editedItem,
+            return render_template('edititem.html', item=editedItem,
                                    catalogs=catalogs,
                                    catalog_name=editedItem.catalog.name)
     else:
         catalogs = session.query(Catalog).order_by(asc(Catalog.name))
-        return render_template('editItem.html', item=editedItem,
+        return render_template('edititem.html', item=editedItem,
                                catalogs=catalogs,
                                catalog_name=editedItem.catalog.name)
 
@@ -615,7 +615,7 @@ def deleteItem(catalog_name, item_name):
         flash('Item Successfully Deleted')
         return redirect(url_for('showCatalogs'))
     else:
-        return render_template('deleteItem.html', item=itemToDelete)
+        return render_template('deleteitem.html', item=itemToDelete)
 
 if __name__ == '__main__':
     app.debug = True
